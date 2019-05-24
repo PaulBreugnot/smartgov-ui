@@ -1,28 +1,35 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="w3-container w3-theme-d1">
+      <h1>SmartGov UI</h1>
+    </div>
+    <div class="w3-bar w3-theme-d2">
+      <button class="w3-bar-item w3-button w3-hover-theme">Simulation</button>
+      <button class="w3-bar-item w3-button w3-hover-theme">Analysis</button>
+      <button class="w3-bar-item w3-button w3-hover-theme">Documentation</button>
+    </div>
+    <component v-bind:is="currentTab"></component>
   </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="coffee">
+import Simulation  from "./components/simulation/Simulation"
 
-export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
-}
+export default
+
+  name: 'app'
+
+  components:
+    "simulation": Simulation
+
+  data: () ->
+    currentTab: "simulation"
+
+
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
+
+
 </style>
