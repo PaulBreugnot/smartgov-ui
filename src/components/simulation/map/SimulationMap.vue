@@ -1,20 +1,33 @@
 <template>
   <l-map :zoom="zoom" :center="center">
     <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-    <l-circle
-      v-for="(node, id) in nodes"
-      :lat-lng="nodeCoordinates(node)"
-      :radius="radius"></l-circle>
+    <l-featuregroup ref="nodeLayer">
+      <l-circle
+        v-for="(node, id) in nodes"
+        v-on:click="openNodePopup(node)"
+        :lat-lng="nodeCoordinates(node)"
+        :radius="radius"></l-circle>
+    </l-featuregroup>
+
     <l-polyline
       v-for="(arc, id) in arcs"
       :lat-lngs="arcCoordinates(arc)"
       color="green">
       </l-polyline>
+    <agents-layer
+      ref="agentsLayer"
+      v-bind:nodes="nodes"/>
+    <l-featuregroup ref="nodePopup">
+      <l-popup v-if="selectedNode">
+        <p>id : {{selectedNode.id}}</p>
+      </l-popup>
+    </l-featuregroup>
   </l-map>
 </template>
 
 <script lang="coffee">
-import {LMap, LTileLayer, LCircle, LPolyline} from "vue2-leaflet"
+import {LMap, LFeatureGroup, LTileLayer, LCircle, LPolyline, LPopup} from "vue2-leaflet"
+import AgentsLayer from "./AgentsLayer"
 
 export default
   components:
@@ -22,6 +35,9 @@ export default
     "l-tile-layer": LTileLayer
     "l-circle": LCircle
     "l-polyline": LPolyline
+    "l-featuregroup": LFeatureGroup
+    "l-popup": LPopup
+    "agents-layer": AgentsLayer
 
   computed:
     center: () ->
@@ -44,6 +60,7 @@ export default
       attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       radius: 2
       nodes: {} # A dict(id, node)
+      selectedNode: null
       arcs: {} # A dict(id, arc)
 
   methods:
@@ -58,6 +75,10 @@ export default
       unless targetNode.id == arc.targetNode
         console.log("FATAL ERROR")
       return [this.nodeCoordinates(startNode), this.nodeCoordinates(targetNode)]
+
+    openNodePopup: (node) ->
+      this.selectedNode = node
+      this.$refs.nodePopup.mapObject.openPopup(this.nodeCoordinates(this.selectedNode))
 
     fetchNodes: () ->
       url = "/json-tests/init_nodes.json"
@@ -93,6 +114,9 @@ export default
       .then((json) ->
         # Special vue syntax to make the dict responsive
         self.$set(self.arcs, id, arc) for id, arc of json
+        self.$refs.agentsLayer.fetchAgents()
+
+        self.$refs.nodeLayer.mapObject.bringToFront()
         )
 
   mounted: () ->

@@ -26,7 +26,7 @@
 <script lang="coffee">
   import Toolbar from "./Toolbar"
   import Sidebar from "./Sidebar"
-  import SimulationMap from "./SimulationMap"
+  import SimulationMap from "./map/SimulationMap"
 
   export default
     components:
