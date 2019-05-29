@@ -1,5 +1,5 @@
 <template>
-  <l-feature-group ref="agents_layer">
+  <l-feature-group ref="agentsFeatureGroup">
     <l-circle
       v-for="(agent, id) in agents"
       :lat-lng="agentCoordinates(agent)"
@@ -31,17 +31,15 @@
       "l-popup": LPopup
       "l-polyline": LPolyline
 
-    props:
-      ["nodes"]
-
     data: () ->
       radius: 3
+      nodes: {}
       agents: {}
       selectedAgent: null
 
     methods:
-
-      fetchAgents: () ->
+      fetchAgents: (nodes) ->
+        this.nodes = nodes
         url = "json-tests/agents_100.json"
 
         self = this
@@ -55,7 +53,7 @@
         .then((json) ->
           console.log(json)
           self.$set(self.agents, id, agent) for id, agent of json
-          self.$refs.agents_layer.mapObject.bringToFront()
+          self.$refs.agentsFeatureGroup.mapObject.bringToFront()
           )
 
       agentCoordinates: (agent) ->
@@ -72,8 +70,11 @@
         addPoint(nodeId) for nodeId in agent.body.plan.nodes
         return points
 
+      bringToFront: () ->
+        this.$refs.agentsFeatureGroup.mapObject.bringToFront()
+
       openPopup: (agent) ->
         this.selectedAgent = agent
-        this.$refs.agents_layer.mapObject.openPopup(this.agentCoordinates(this.selectedAgent))
+        this.$refs.agentsFeatureGroup.mapObject.openPopup(this.agentCoordinates(this.selectedAgent))
 
 </script>
