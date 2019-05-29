@@ -1,14 +1,14 @@
 <template>
-  <l-featuregroup ref="nodeLayer">
+  <l-featuregroup ref="nodesFeatureGroup">
     <l-circle
       v-for="(node, id) in nodes"
-      v-on:click="openNodePopup(node)"
+      v-on:click="selectNode(node)"
       :lat-lng="nodeCoordinates(node)"
       :radius="radius">
     </l-circle>
-    <l-popup v-if="selectedNode">
-      <p>id : {{selectedNode.id}}</p>
-    </l-popup>
+      <l-popup v-if="selectedNode">
+        <p>id : {{selectedNode.id}}</p>
+      </l-popup>
     </l-featuregroup>
 </template>
 
@@ -39,18 +39,25 @@
           console.log(error)
           )
         .then((response) ->
-          console.log(response)
           response.json()
           )
         .then((json) ->
           # Special vue syntax to make the dict responsive
           self.$set(self.nodes, id, node) for id, node of json
+
+          console.log("Nodes :")
+          console.log(self.nodes)
           self.$emit('ready', self.nodes)
         )
 
-      openNodePopup: (node) ->
+      selectNode: (node) ->
         this.selectedNode = node
-        this.$refs.nodePopup.mapObject.openPopup(this.nodeCoordinates(this.selectedNode))
+        console.log("Node selected :")
+        console.log(node)
+        this.$refs.nodesFeatureGroup.mapObject.openPopup(this.nodeCoordinates(this.selectedNode))
+
+      bringToFront: () ->
+        this.$refs.nodesFeatureGroup.mapObject.bringToFront()
 
     mounted: () ->
       this.fetchNodes()

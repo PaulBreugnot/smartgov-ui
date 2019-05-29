@@ -1,10 +1,10 @@
 <template>
-  <l-feature-group ref="agentsFeatureGroup">
+  <l-featuregroup ref="agentsFeatureGroup">
     <l-circle
       v-for="(agent, id) in agents"
       :lat-lng="agentCoordinates(agent)"
       :radius="radius"
-      v-on:click="openPopup(agent)"
+      v-on:click="selectAgent(agent)"
       color="red">
     </l-circle>
     <l-popup v-if="selectedAgent">
@@ -17,7 +17,7 @@
       v-if="selectedAgent"
       :lat-lngs="trajectoryCoordinates(selectedAgent)"
       color="red"/>
-  </l-feature-group>
+  </l-featuregroup>
 </template>
 
 <script lang="coffee">
@@ -26,7 +26,7 @@
   export default
 
     components:
-      "l-feature-group": LFeatureGroup
+      "l-featuregroup": LFeatureGroup
       "l-circle": LCircle
       "l-popup": LPopup
       "l-polyline": LPolyline
@@ -51,9 +51,9 @@
           response.json()
           )
         .then((json) ->
-          console.log(json)
           self.$set(self.agents, id, agent) for id, agent of json
-          self.$refs.agentsFeatureGroup.mapObject.bringToFront()
+          console.log("Agents :")
+          console.log(self.agents)
           )
 
       agentCoordinates: (agent) ->
@@ -73,8 +73,10 @@
       bringToFront: () ->
         this.$refs.agentsFeatureGroup.mapObject.bringToFront()
 
-      openPopup: (agent) ->
+      selectAgent: (agent) ->
         this.selectedAgent = agent
+        console.log("Selected agent :")
+        console.log(agent)
         this.$refs.agentsFeatureGroup.mapObject.openPopup(this.agentCoordinates(this.selectedAgent))
 
 </script>
