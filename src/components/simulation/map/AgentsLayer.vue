@@ -16,7 +16,7 @@
     <l-polyline
       v-if="selectedAgent"
       :lat-lngs="trajectoryCoordinates(selectedAgent)"
-      color="red"/>
+      color="blue"/>
   </l-featuregroup>
 </template>
 
@@ -40,7 +40,7 @@
     methods:
       fetchAgents: (nodes) ->
         this.nodes = nodes
-        url = "json-tests/agents_100.json"
+        url = "json-tests/agents_43200.json"
 
         self = this
         fetch(url)
