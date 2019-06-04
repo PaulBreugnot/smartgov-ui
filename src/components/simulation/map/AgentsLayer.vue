@@ -10,8 +10,8 @@
     <l-popup v-if="selectedAgent">
       <p>id : {{selectedAgent.id}}</p>
       <p>speed : {{selectedAgent.body.speed}}</p>
-      <p>origin : {{selectedAgent.properties.beginNode}}</p>
-      <p>destination : {{selectedAgent.properties.endNode}}</p>
+      <p>origin : {{selectedAgent.behavior.origin}}</p>
+      <p>destination : {{selectedAgent.behavior.destination}}</p>
     </l-popup>
     <l-polyline
       v-if="selectedAgent"
