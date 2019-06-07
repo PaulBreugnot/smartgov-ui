@@ -15,7 +15,11 @@
       </div>
     </header>
   <div class="w3-cell-row">
-    <sidebar id="model-sidebar" class="w3-cell"></sidebar>
+    <sidebar
+		id="model-sidebar"
+		class="w3-cell"
+		>
+	</sidebar>
     <div id="map-container" class="w3-cell w3-cell-top w3-border">
       <simulation-map id="leaflet-map"></simulation-map>
     </div>
@@ -24,18 +28,20 @@
 </template>
 
 <script lang="coffee">
-  import Toolbar from "./Toolbar"
-  import Sidebar from "./Sidebar"
-  import SimulationMap from "./map/SimulationMap"
+Stomp = require('stompjs')
 
-  export default
-    components:
-      "toolbar": Toolbar
-      "sidebar": Sidebar
-      "simulation-map": SimulationMap
+import Sidebar from "./Sidebar"
+import SimulationMap from "./map/SimulationMap"
 
-    data: () ->
-      currentTab: 'simulation'
+export default
+	components:
+		"sidebar": Sidebar
+		"simulation-map": SimulationMap
+
+	data: () ->
+		currentTab: 'simulation'
+		simulationDuration: null
+
 </script>
 
 <style>

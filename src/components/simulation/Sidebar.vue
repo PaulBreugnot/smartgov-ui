@@ -1,6 +1,10 @@
 <template>
   <div>
-    <toolbar class="w3-center"></toolbar>
+    <toolbar
+		class="w3-center"
+		v-bind:simulation-duration="simulationDuration"
+		>
+	</toolbar>
       <div class="w3-bar-block">
         <h2 class="w3-center">Settings</h2>
         <div class="w3-cell-row w3-padding">
@@ -32,7 +36,10 @@
           <label>Agent Number :</label>
           <input class="w3-input" type="number" min="1">
           <label> Duration :</label>
-          <duration-picker></duration-picker>
+          <duration-picker
+			v-on:duration="simulationDuration = $event"
+			v-model="simulationDuration"
+			></duration-picker>
           <label> Tick Duration :</label>
           <input class="w3-input w3-border-0" type="range"></input>
         </form>
@@ -79,24 +86,24 @@
 </template>
 
 <script lang="coffee">
-  import Toolbar from "./Toolbar"
-  import DurationPicker from "./DurationPicker"
+import Toolbar from "./Toolbar"
+import DurationPicker from "./DurationPicker"
 
-  export default
-    components:
-      "toolbar": Toolbar
-      "duration-picker": DurationPicker
+export default
+	components:
+		"toolbar": Toolbar
+		"duration-picker": DurationPicker
 
-    data: () ->
-      showScenarios: false
-      selectedScenario: "Visualization"
-      settingsDisplay: 'simulation'
+	data: () ->
+		showScenarios: false
+		selectedScenario: "Visualization"
+		settingsDisplay: 'simulation'
+		simulationDuration: 100
 
-
-    methods:
-      selectScenario: (scenario) ->
-        this.selectedScenario = scenario
-        this.showScenarios = false
+	methods:
+		selectScenario: (scenario) ->
+			this.selectedScenario = scenario
+			this.showScenarios = false
 
 </script>
 

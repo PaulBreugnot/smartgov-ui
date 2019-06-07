@@ -21,62 +21,81 @@
 </template>
 
 <script lang="coffee">
-  import { LFeatureGroup, LCircle, LPopup, LPolyline } from "vue2-leaflet"
+import { LFeatureGroup, LCircle, LPopup, LPolyline } from "vue2-leaflet"
 
-  export default
+export default
 
-    components:
-      "l-featuregroup": LFeatureGroup
-      "l-circle": LCircle
-      "l-popup": LPopup
-      "l-polyline": LPolyline
+	components:
+		"l-featuregroup": LFeatureGroup
+		"l-circle": LCircle
+		"l-popup": LPopup
+		"l-polyline": LPolyline
 
-    data: () ->
-      radius: 3
-      nodes: {}
-      agents: {}
-      selectedAgent: null
+	data: () ->
+		radius: 3
+		nodes: {}
+		agents: {}
+		selectedAgent: null
 
-    methods:
-      fetchAgents: (nodes) ->
-        this.nodes = nodes
-        url = "json-tests/agents_43200.json"
+	methods:
+		fetchAgents: (nodes) ->
+			this.nodes = nodes
+			url = "json-tests/agents_43200.json"
 
-        self = this
-        fetch(url)
-        .catch((error) ->
-          console.log(error)
-          )
-        .then((response) ->
-          response.json()
-          )
-        .then((json) ->
-          self.$set(self.agents, id, agent) for id, agent of json
-          console.log("Agents :")
-          console.log(self.agents)
-          )
+			self = this
+			fetch(url)
+			.catch((error) ->
+				console.log(error)
+			)
+			.then((response) ->
+				response.json()
+			)
+			.then((json) ->
+				self.$set(self.agents, id, agent) for id, agent of json
+				console.log("Agents :")
+				console.log(self.agents)
+			)
 
-      agentCoordinates: (agent) ->
-        position = agent.body.position
-        return L.latLng(position[1], position[0])
+		connectToWebSocket: () ->
+			socket = new SockJS('http://localhost:8000/gs-guide-websocket');
+			stompClient = Stomp.over(socket);
 
-      trajectoryCoordinates: (agent) ->
-        points = []
-        self = this
-        addPoint = (nodeId) ->
-          node = self.nodes[nodeId]
-          points.push(L.latLng(node.position[1], node.position[0]))
+			# Disable debug logs
+			stompClient.debug = null
 
-        addPoint(nodeId) for nodeId in agent.body.plan.nodes
-        return points
+			self = this
+			stompClient.connect({}, (frame) ->
+				console.log('Connected: ' + frame);
+				stompClient.subscribe('/simulation/agents', (message) ->
+					newAgents = JSON.parse(message.body)
+					self.agents[newAgent.id] = newAgent for newAgent in newAgents
+					)
+			)
+		
+		agentCoordinates: (agent) ->
+			position = agent.body.position
+			return L.latLng(position[1], position[0])
 
-      bringToFront: () ->
-        this.$refs.agentsFeatureGroup.mapObject.bringToFront()
+		trajectoryCoordinates: (agent) ->
+			points = []
+			self = this
+			addPoint = (nodeId) ->
+				node = self.nodes[nodeId]
+				points.push(L.latLng(node.position[1], node.position[0]))
 
-      selectAgent: (agent) ->
-        this.selectedAgent = agent
-        console.log("Selected agent :")
-        console.log(agent)
-        this.$refs.agentsFeatureGroup.mapObject.openPopup(this.agentCoordinates(this.selectedAgent))
+			addPoint(nodeId) for nodeId in agent.body.plan.nodes
+			return points
+
+		bringToFront: () ->
+			this.$refs.agentsFeatureGroup.mapObject.bringToFront()
+
+		selectAgent: (agent) ->
+			this.selectedAgent = agent
+			console.log("Selected agent :")
+			console.log(agent)
+			this.$refs.agentsFeatureGroup.mapObject.openPopup(this.agentCoordinates(this.selectedAgent))
+
+	mounted: () ->
+		this.connectToWebSocket()
 
 </script>
