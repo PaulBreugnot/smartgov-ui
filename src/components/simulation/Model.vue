@@ -41,7 +41,7 @@ export default
 	data: () ->
 		currentTab: 'simulation'
 		simulationDuration: null
-
+	
 </script>
 
 <style>

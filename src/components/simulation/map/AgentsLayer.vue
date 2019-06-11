@@ -1,23 +1,23 @@
 <template>
-  <l-featuregroup ref="agentsFeatureGroup">
-    <l-circle
-      v-for="(agent, id) in agents"
-      :lat-lng="agentCoordinates(agent)"
-      :radius="radius"
-      v-on:click="selectAgent(agent)"
-      color="red">
-    </l-circle>
-    <l-popup v-if="selectedAgent">
-      <p>id : {{selectedAgent.id}}</p>
-      <p>speed : {{selectedAgent.body.speed}}</p>
-      <p>origin : {{selectedAgent.behavior.origin}}</p>
-      <p>destination : {{selectedAgent.behavior.destination}}</p>
-    </l-popup>
-    <l-polyline
-      v-if="selectedAgent"
-      :lat-lngs="trajectoryCoordinates(selectedAgent)"
-      color="blue"/>
-  </l-featuregroup>
+	<l-featuregroup ref="agentsFeatureGroup">
+		<l-circle
+			v-for="(agent, id) in agents"
+			:lat-lng="agentCoordinates(agent)"
+			:radius="radius"
+			v-on:click="selectAgent(agent)"
+			color="red">
+		</l-circle>
+		<l-popup v-if="selectedAgent">
+			<p>id : {{selectedAgent.id}}</p>
+			<p>speed : {{selectedAgent.body.speed}}</p>
+			<p>origin : {{selectedAgent.behavior.origin}}</p>
+			<p>destination : {{selectedAgent.behavior.destination}}</p>
+		</l-popup>
+		<l-polyline
+			v-if="selectedAgent"
+			:lat-lngs="trajectoryCoordinates(selectedAgent)"
+			color="blue"/>
+	</l-featuregroup>
 </template>
 
 <script lang="coffee">
@@ -57,7 +57,7 @@ export default
 			)
 
 		connectToWebSocket: () ->
-			socket = new SockJS('http://localhost:8000/gs-guide-websocket');
+			socket = new SockJS('http://localhost:8000/sg-websocket');
 			stompClient = Stomp.over(socket);
 
 			# Disable debug logs

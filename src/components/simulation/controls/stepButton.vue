@@ -1,14 +1,16 @@
 <template>
-	<button v-on:click="buildSimulation"><i class="fas fa-cogs fa-lg"></i></button>
+	<button v-on:click="step">
+		<i class="fa fa-forward fa-fw fa-lg"></i>
+	</button>
 </template>
 
 <script lang=coffee>
 
 export default
-	
+
 	methods:
-		buildSimulation: () ->
-			url = "http://localhost:8000/api/build"
+		step: () ->
+			url = "http://localhost:8000/api/step"
 			options =
 				method: "PUT"
 
@@ -22,7 +24,7 @@ export default
 			)
 			.then((message) ->
 				console.log(message)
-				self.$emit("sg-built")
+				self.$emit("sg-step")
 			)
 
 </script>
