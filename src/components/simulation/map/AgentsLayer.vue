@@ -35,6 +35,7 @@ export default
 		radius: 3
 		nodes: {}
 		agents: {}
+		selectedAgentId: null
 		selectedAgent: null
 
 	methods:
@@ -69,6 +70,8 @@ export default
 				stompClient.subscribe('/simulation/agents', (message) ->
 					newAgents = JSON.parse(message.body)
 					self.agents[newAgent.id] = newAgent for newAgent in newAgents
+
+					self.selectedAgent = self.agents[self.selectedAgentId]
 					)
 			)
 		
@@ -90,6 +93,7 @@ export default
 			this.$refs.agentsFeatureGroup.mapObject.bringToFront()
 
 		selectAgent: (agent) ->
+			this.selectedAgentId = agent.id
 			this.selectedAgent = agent
 			console.log("Selected agent :")
 			console.log(agent)
