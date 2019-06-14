@@ -5,7 +5,7 @@
 			:lat-lng="agentCoordinates(agent)"
 			:radius="radius"
 			v-on:click="selectAgent(agent)"
-			color="red">
+			:color="id == selectedAgentId ? 'red' : 'purple'">
 		</l-circle>
 		<l-popup v-if="selectedAgent">
 			<p>id : {{selectedAgent.id}}</p>
@@ -58,7 +58,7 @@ export default
 			)
 
 		connectToWebSocket: () ->
-			socket = new SockJS('http://localhost:8000/sg-websocket');
+			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
 			stompClient = Stomp.over(socket);
 
 			# Disable debug logs

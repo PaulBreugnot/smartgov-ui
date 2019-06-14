@@ -10,7 +10,7 @@ export default
 
 	methods:
 		step: () ->
-			url = "http://localhost:8000/api/step"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/step"
 			options =
 				method: "PUT"
 

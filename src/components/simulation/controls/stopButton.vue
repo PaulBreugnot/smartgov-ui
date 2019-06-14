@@ -10,7 +10,7 @@ export default
 
 	methods:
 		stop: () ->
-			url = "http://localhost:8000/api/stop"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/stop"
 			options =
 				method: "PUT"
 

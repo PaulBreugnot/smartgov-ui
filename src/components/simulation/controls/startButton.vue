@@ -17,7 +17,7 @@ export default
 
 	methods:
 		startSimulation: () ->
-			url = "http://localhost:8000/api/start?ticks=#{this.duration}"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/start?ticks=#{this.duration}"
 			options =
 				method: "PUT"
 
@@ -36,7 +36,7 @@ export default
 			)
 
 		connectToWebSocket: () ->
-			socket = new SockJS('http://localhost:8000/sg-websocket');
+			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
 			stompClient = Stomp.over(socket);
 
 			# Disable debug logs

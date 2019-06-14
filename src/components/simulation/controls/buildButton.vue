@@ -8,7 +8,7 @@ export default
 	
 	methods:
 		buildSimulation: () ->
-			url = "http://localhost:8000/api/build"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/build"
 			options =
 				method: "PUT"
 

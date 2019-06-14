@@ -20,7 +20,7 @@ export default
 				this.pauseSimulation()
 
 		pauseSimulation: () ->
-			url = "http://localhost:8000/api/pause"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/pause"
 			options =
 				method: "PUT"
 
@@ -38,7 +38,7 @@ export default
 			)
 
 		resumeSimulation: () ->
-			url = "http://localhost:8000/api/resume"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/resume"
 			options =
 				method: "PUT"
 
