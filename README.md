@@ -1,5 +1,7 @@
 # smartgov-ui
 
+Vue.js frontend for the [SmartGov low emission zones model](https://github.com/PaulBreugnot/SmartGovLezModel).
+
 ## Project setup
 ```
 npm install
@@ -13,16 +15,6 @@ npm run serve
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
 ```
 
 ### Customize configuration
