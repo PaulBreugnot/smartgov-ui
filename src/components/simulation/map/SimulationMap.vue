@@ -1,23 +1,23 @@
 <template>
-  <l-map ref="simulationMap" :zoom="zoom" :center="center">
-    <l-tile-layer ref="osmBaseLayer" :url="url" :attribution="attribution"></l-tile-layer>
+	<l-map ref="simulationMap" :zoom="zoom" :center="center">
+		<l-tile-layer ref="osmBaseLayer" :url="url" :attribution="attribution"></l-tile-layer>
 	
 	<l-feature-group ref="graphLayer">
-    	<nodes-layer
-      		ref="nodesLayer"
-      		v-on:ready="handleNodesReady"
-      	/>
+			<nodes-layer
+				ref="nodesLayer"
+				v-on:nodes-updated="handleNodesReady"
+				/>
 
-    	<arcs-layer
-      	ref="arcsLayer"
-      	/>
+			<arcs-layer
+				ref="arcsLayer"
+				/>
 	</l-feature-group>
 
-    <agents-layer
-      ref="agentsLayer"
-      />
+	<agents-layer
+		ref="agentsLayer"
+		/>
 
-  </l-map>
+	</l-map>
 </template>
 
 <script lang="coffee">
@@ -27,18 +27,18 @@ import ArcsLayer from "./ArcsLayer"
 import AgentsLayer from "./AgentsLayer"
 
 computeCenter = (nodes) ->
-  nodeCount = Object.keys(nodes).length
-  if  nodeCount > 0
-    totalLat = 0
-    totalLon = 0
-    sumCoordinates = (coordinates) ->
-      totalLat += coordinates[1]
-      totalLon += coordinates[0]
+	nodeCount = Object.keys(nodes).length
+	if	nodeCount > 0
+		totalLat = 0
+		totalLon = 0
+		sumCoordinates = (coordinates) ->
+			totalLat += coordinates[1]
+			totalLon += coordinates[0]
 
-    sumCoordinates(node.position) for id, node of nodes
+		sumCoordinates(node.position) for id, node of nodes
 
-    return  L.latLng(totalLat / nodeCount, totalLon / nodeCount)
-  return L.latLng(0, 0)
+		return	L.latLng(totalLat / nodeCount, totalLon / nodeCount)
+	return L.latLng(0, 0)
 
 export default
 	components:
@@ -80,8 +80,12 @@ export default
 		handleNodesReady: (nodes) ->
 			self = this
 
+			console.log("Updating nodes...")
+
 			this.center = computeCenter(nodes)
-			this.$refs.agentsLayer.fetchAgents(nodes)
+			# this.$refs.agentsLayer.fetchAgents(nodes)
+
+			###
 			this.$refs.arcsLayer.fetchArcs(nodes)
 			.then(() ->
 				self.$refs.nodesLayer.bringToFront()
@@ -90,6 +94,29 @@ export default
 
 				self.$refs.arcsLayer.setUpPollutionControls(self.$refs.simulationMap.mapObject)
 			)
+			###
+			this.$refs.arcsLayer.setUpNodes(nodes)
+			this.$refs.agentsLayer.setUpNodes(nodes)
+			this.setUpControls()
+			this.$refs.arcsLayer.setUpPollutionControls(this.$refs.simulationMap.mapObject)
+
+		connectToWebSocket: () ->
+			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
+			stompClient = Stomp.over(socket);
+
+			# Disable debug logs
+			stompClient.debug = null
+
+			self = this
+			stompClient.connect({}, (frame) ->
+				console.log('Connected: ' + frame)
+				self.$refs.nodesLayer.setUpWebSocket(stompClient)
+				self.$refs.arcsLayer.setUpWebSocket(stompClient)
+				self.$refs.agentsLayer.setUpWebSocket(stompClient)
+			)
+
+	mounted: () ->
+		this.connectToWebSocket()
 
 </script>
 

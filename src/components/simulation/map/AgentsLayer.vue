@@ -39,6 +39,7 @@ export default
 		selectedAgent: null
 
 	methods:
+		###
 		fetchAgents: (nodes) ->
 			this.nodes = nodes
 			url = "json-tests/agents_43200.json"
@@ -56,25 +57,29 @@ export default
 				console.log("Agents :")
 				console.log(self.agents)
 			)
+		###
 
-		connectToWebSocket: () ->
-			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
-			stompClient = Stomp.over(socket);
+		setUpNodes: (nodes) ->
+			this.nodes = nodes
 
-			# Disable debug logs
-			stompClient.debug = null
+		updateAgent: (agent) ->
+			agentToUpdate = this.agents[agent.id]
+			if agentToUpdate
+				# The agent is already initialized
+				for key, value of agent
+					agentToUpdate[key] = value
 
+			else
+				# this is a new agent
+				this.$set(this.agents, agent.id, agent)
+
+		setUpWebSocket: (stompClient) ->
 			self = this
-			stompClient.connect({}, (frame) ->
-				console.log('Connected: ' + frame);
-				stompClient.subscribe('/simulation/agents', (message) ->
-					newAgents = JSON.parse(message.body)
-					self.agents[newAgent.id] = newAgent for newAgent in newAgents
+			stompClient.subscribe('/simulation/agents', (message) ->
+					updatedAgents = JSON.parse(message.body)
+					self.updateAgent(agent) for agent in updatedAgents
+				)
 
-					self.selectedAgent = self.agents[self.selectedAgentId]
-					)
-			)
-		
 		agentCoordinates: (agent) ->
 			position = agent.body.position
 			return L.latLng(position[1], position[0])
@@ -98,8 +103,5 @@ export default
 			console.log("Selected agent :")
 			console.log(agent)
 			this.$refs.agentsFeatureGroup.mapObject.openPopup(this.agentCoordinates(this.selectedAgent))
-
-	mounted: () ->
-		this.connectToWebSocket()
 
 </script>
