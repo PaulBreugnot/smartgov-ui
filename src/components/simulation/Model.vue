@@ -29,7 +29,7 @@
 <script lang="coffee">
 Stomp = require('stompjs')
 
-import Sidebar from "./Sidebar"
+import Sidebar from "./sidebar/Sidebar"
 import SimulationMap from "./map/SimulationMap"
 
 export default

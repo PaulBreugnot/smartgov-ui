@@ -27,15 +27,13 @@
 </template>
 
 <script lang="coffee">
-	import BuildButton from "./controls/buildButton"
-	import StartButton from "./controls/startButton"
-	import PauseButton from "./controls/pauseButton"
-	import StepButton from "./controls/stepButton"
-	import StopButton from "./controls/stopButton"
+	import StartButton from "../controls/startButton"
+	import PauseButton from "../controls/pauseButton"
+	import StepButton from "../controls/stepButton"
+	import StopButton from "../controls/stopButton"
 
 	export default
 		components:
-			"build-button": BuildButton
 			"start-button": StartButton
 			"pause-button": PauseButton
 			"step-button": StepButton
