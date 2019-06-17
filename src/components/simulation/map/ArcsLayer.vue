@@ -6,9 +6,11 @@
 			<l-polyline
 				v-if="nodes"
 				v-for="(arc, id) in arcs"
-				:lat-lngs="arcCoordinates(arc)"
-				:color="pollutantColor(arc, pollutant)"
+				v-bind:ref="arc.id + '_' + pollutant"
+				v-bind:lat-lngs="computedArcCoordinates[arc.id]"
 				v-on:click="selectArc(arc, pollutant)">
+				<!--:lat-lngs="arcCoordinates(arc)"-->
+				<!--:color="pollutantColor(arc, pollutant)"-->
 			</l-polyline>
 			<l-popup v-if="selectedArc">
 				<p>Id: {{selectedArc.id}}</p>
@@ -20,7 +22,7 @@
 			<l-polyline
 				v-if="nodes"
 				v-for="(arc, id) in arcs"
-				:lat-lngs="arcCoordinates(arc)"
+				:lat-lngs="computedArcCoordinates[arc.id]"
 				v-on:click="selectArc(arc, 'None')"
 				color="green"/>
 			<l-popup v-if="selectedArc">
@@ -55,6 +57,14 @@
 			selectedArc: null
 			pollutants: ["NO2", "NOx", "NH3", "VOC", "PM", "CH4", "CO", "FC"]
 			pollutionPeeks: {}
+			arcColors: {}
+
+		computed:
+			computedArcCoordinates: () ->
+				console.log("Computing arc coordinates...")
+				coordinates = {}
+				coordinates[id] = this.arcCoordinates(arc) for id, arc of this.arcs
+				return coordinates
 
 		methods:
 			nodeCoordinates: (node) ->
@@ -73,25 +83,6 @@
 			pollutantColor: (arc, pollutant) ->
 				rgb = hsv2rgb(0, arc.pollution[pollutant]/this.pollutionPeeks[pollutant], 1)
 				return "rgb(#{Math.floor(rgb[0]*255)},#{Math.floor(rgb[1]*255)},#{Math.floor(rgb[2]*255)})"
-
-			###
-			setUpPollutionControls: (map) ->
-				self = this
-				this.fetchPollutionPeeks()
-					.then(() ->
-						baselayers = { }
-						overlays = { }
-
-						addPollutantBaseLayer = (pollutant) ->
-							baselayers[pollutant] = self.$refs[pollutant][0].mapObject
-							self.$refs[pollutant][0].mapObject.bringToFront()
-						baselayers.None = self.$refs.None.mapObject
-						self.$refs.None.mapObject.bringToFront()
-
-						addPollutantBaseLayer(pollutant) for pollutant in self.pollutants
-						L.control.layers(baselayers, overlays).addTo(map).expand();
-					)
-			###
 
 			setUpPollutionControls: (map) ->
 				baselayers = { }
@@ -131,10 +122,15 @@
 					# this is a new arc
 					this.$set(this.arcs, arc.id, arc)
 
-			updateArcPollution: (pollutedArc) ->
-				arcToUpdate = this.arcs[pollutedArc.id]
-				for pollutant in this.pollutants
-					arcToUpdate.pollution[pollutant] = pollutedArc.pollution[pollutant]
+			updateArcsPollution: (pollutedArcs) ->
+				self = this
+				for pollutedArc in pollutedArcs
+					do (pollutedArc) ->
+						arcToUpdate = self.arcs[pollutedArc.id]
+						for pollutant in self.pollutants
+							# self.$set(self.arcColors, pollutedArc.id, self.pollutantColor(pollutedArc, pollutant))
+							# arcToUpdate.pollution[pollutant] = pollutedArc.pollution[pollutant]
+							self.$refs[pollutedArc.id + '_' + pollutant][0].mapObject.setStyle({"color": self.pollutantColor(pollutedArc, pollutant)})
 
 			setUpWebSocket: (stompClient) ->
 				self = this
@@ -146,59 +142,17 @@
 					)
 
 				stompClient.subscribe('/simulation/pollution_peeks', (message) ->
+						# console.log("processing pollution peeks")
 						updatedPollutionPeeks = JSON.parse(message.body)
 						self.$set(self.pollutionPeeks, pollutant, value) for pollutant, value of updatedPollutionPeeks
 
-						console.log(updatedPollutionPeeks)
-						console.log(self.pollutionPeeks.NOx)
 					)
 
 				stompClient.subscribe('/simulation/pollution', (message) ->
-						pollutedArc = JSON.parse(message.body)
-						self.updateArcPollution(pollutedArc)
+						# console.log("processing polluted arcs")
+						pollutedArcs = JSON.parse(message.body)
+						self.updateArcsPollution(pollutedArcs)
+						# self.updateArcPollution(pollutedArc) for pollutedArc in pollutedArcs
 					)
-
-			###
-			fetchArcs: (nodes) ->
-				this.nodes = nodes
-				url = "/json-tests/arcs_43200.json"
-
-				self = this
-				fetch(url)
-				.catch((error) ->
-					console.log(error))
-				.then((response) ->
-					response.json()
-					)
-				.then((json) ->
-					# Special vue syntax to make the dict responsive
-					self.$set(self.arcs, id, arc) for id, arc of json
-
-					console.log("Arcs :")
-					console.log(self.arcs)
-					)
-			###
-
-			###
-			fetchPollutionPeeks: () ->
-				url = "/json-tests/pollution_peeks_43200.json"
-
-				self=this
-				fetch(url)
-				.catch((error) ->
-					console.log(error)
-					)
-				.then((response) ->
-					response.json()
-				)
-				.then((json) ->
-					self.pollutionPeeks[pollutant] = value for pollutant, value of json
-					self.pollutants.push(pollutant) for pollutant in Object.keys(json)
-					console.log("Pollutants :")
-					console.log(self.pollutants)
-
-					console.log(self.pollutionPeeks)
-				)
-			###
 
 </script>
