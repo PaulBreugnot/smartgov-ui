@@ -1,30 +1,29 @@
 <template>
-  <div class="w3-card w3-margin w3-theme-l4">
-    <header class="w3-theme-d1">
-      <h2 class="w3-center">Low Emission Zones</h2>
-      <div class="w3-bar w3-theme-l4">
-        <button
-          class="w3-bar-item w3-button w3-hover-theme"
-          v-bind:class="{'w3-theme-d1': currentTab == 'simulation'}">Simulation</button>
-        <button
-          class="w3-bar-item w3-button w3-hover-theme"
-          v-bind:class="{'w3-theme-d1': currentTab == 'population'}">Population</button>
-        <button
-          class="w3-bar-item w3-button w3-hover-theme"
-          v-bind:class="{'w3-theme-d1': currentTab == 'analysis'}">Analysis</button>
-      </div>
-    </header>
-  <div class="w3-cell-row">
-    <sidebar
-		id="model-sidebar"
-		class="w3-cell"
-		>
-	</sidebar>
-    <div id="map-container" class="w3-cell w3-cell-top w3-border">
-      <simulation-map id="leaflet-map"></simulation-map>
-    </div>
-  </div>
-</div>
+	<div id="simulation-body" class="w3-theme-l4">
+		<header id="body-header" class="w3-theme-d1">
+			<div id="tabs-bar" class="w3-bar w3-theme-l4">
+				<button
+					class="tab-button w3-bar-item w3-button w3-hover-theme"
+					v-bind:class="{'w3-theme-d1': currentTab == 'simulation'}">Simulation</button>
+				<button
+					class="tab-button w3-bar-item w3-button w3-hover-theme"
+					v-bind:class="{'w3-theme-d1': currentTab == 'population'}">Population</button>
+				<button
+					class="tab-button w3-bar-item w3-button w3-hover-theme"
+					v-bind:class="{'w3-theme-d1': currentTab == 'analysis'}">Analysis</button>
+			</div>
+		</header>
+		<div id="body" class="w3-cell-row">
+			<sidebar
+			id="model-sidebar"
+			class="w3-cell"
+			>
+			</sidebar>
+			<div id="map-container" class="w3-cell w3-cell-top w3-border">
+				<simulation-map id="leaflet-map"></simulation-map>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script lang="coffee">
@@ -46,20 +45,40 @@ export default
 
 <style>
 /* #simulation-body {
-  margin-left: 15%;
+	margin-left: 15%;
 } */
 #leaflet-map {
-  position: relative;
-  width: 100%;
-  height: 70vh;
+	position: relative;
+	width: 100%;
+	height: 100%;
 }
 
 #model-sidebar {
-  width: 15%;
-  padding: 10px 0px;
+	width: 20%;
+	padding: 10px 0px;
 }
 
 #map-container {
-  width: 85%;
+	width: 85%;
+}
+
+#simulation-body {
+	height: 92%;
+}
+
+#body-header {
+	height: 5%;
+}
+
+#body {
+	height: 95%;
+}
+
+#tabs-bar {
+	height: 100%;
+}
+
+.tab-button {
+	height: 100%;
 }
 </style>
