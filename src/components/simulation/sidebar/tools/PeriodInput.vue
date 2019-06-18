@@ -4,6 +4,7 @@
 		<input
 			class="w3-input"
 			type="range"
+			v-bind:disabled="disabled"
 			v-model.number="period"
 			v-on:input="$emit('update:period', period)"
 			v-bind:max="max"
@@ -13,6 +14,7 @@
 		<input
 			class="w3-input"
 			type="number"
+			v-bind:disabled="disabled"
 			v-bind:min="min"
 			v-bind:max="max"
 			v-model.number="period"
@@ -28,6 +30,11 @@
 	export default
 
 		props:
+			"disabled":
+				type: Boolean
+				required: false
+				default: false
+
 			"max":
 				type: Number
 				required: true
@@ -43,14 +50,6 @@
 		
 		data: () ->
 			"period": 1
-
-		methods:
-			computePeriod: () ->
-				this.max - this.rawInput + 1
-
-			handleNumericInput: (newValue) ->
-				this.rawInput = this.max - newValue + 1
-				this.$emit('update:refresh-period', newValue)
 
 		mounted: () ->
 			if this.init
