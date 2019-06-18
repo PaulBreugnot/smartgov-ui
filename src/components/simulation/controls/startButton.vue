@@ -10,14 +10,21 @@
 export default
 
 	props:
-		["duration"]
+		simulationDuration:
+			type: Number
+			required: true
+		tickDuration:
+			type: Number
+			required: true
 
 	data: () ->
 		"running": false
 
 	methods:
 		startSimulation: () ->
-			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/start?ticks=#{this.duration}"
+			parameters = "simulationDuration=#{this.simulationDuration}&tickDuration=#{this.tickDuration}"
+			url = "#{process.env.VUE_APP_SIMULATION_SERVER_URL}/api/start?#{parameters}"
+
 			options =
 				method: "PUT"
 

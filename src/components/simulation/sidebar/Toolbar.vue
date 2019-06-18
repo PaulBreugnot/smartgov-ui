@@ -2,7 +2,8 @@
 	<div>
 		<div class="w3-cell-row">
 		<start-button
-			v-bind:duration="simulationDuration"
+			v-bind:simulation-duration="simulationDuration"
+			v-bind:tick-duration="tickDuration"
 			v-bind:disabled="!(enabled && startEnabled)"
 			v-on:sg-start="handleSimulationStart"
 			v-on:sg-stop="handleSimulationStop"
@@ -40,7 +41,15 @@
 			"stop-button": StopButton
 
 		props:
-			["simulationDuration", "enabled"]
+			simulationDuration:
+				type: Number
+				required: true
+			tickDuration:
+				type: Number
+				required: true
+			enabled:
+				type: Boolean
+				required: true
 		
 		data: () ->
 			"startEnabled": true

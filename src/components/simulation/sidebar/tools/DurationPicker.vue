@@ -4,8 +4,8 @@
 		class="w3-input w3-cell w3-cell-middle"
 		type="number"
 		min="1"
-		v-bind:value="duration"
-		v-on:input="$emit('update:duration', $event.target.value)"
+		v-model.number="localDuration"
+		v-on:input="$emit('update:duration', localDuration)"
 		>
 	</input>
 		<div class="w3-cell w3-cell-middle">
@@ -37,10 +37,14 @@ export default
 	data: () ->
 		unit: "Ticks"
 		showUnits: false
+		localDuration: 0
 
 	methods:
 		selectUnit: (unit) ->
 			this.unit = unit
 			this.showUnits = false
+	
+	mounted: () ->
+		this.localDuration = this.duration
 
 </script>
