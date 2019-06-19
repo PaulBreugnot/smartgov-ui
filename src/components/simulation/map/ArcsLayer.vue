@@ -49,7 +49,9 @@
 			"l-popup": LPopup
 
 		props:
-			["simulation-map"]
+			lMap:
+				type: Object
+				required: true
 
 		data: () ->
 			nodes: null
@@ -84,7 +86,7 @@
 				rgb = hsv2rgb(0, arc.pollution[pollutant]/this.pollutionPeeks[pollutant], 1)
 				return "rgb(#{Math.floor(rgb[0]*255)},#{Math.floor(rgb[1]*255)},#{Math.floor(rgb[2]*255)})"
 
-			setUpPollutionControls: (map) ->
+			setUpPollutionControls: () ->
 				baselayers = { }
 				overlays = { }
 
@@ -97,7 +99,7 @@
 				this.$refs.None.mapObject.bringToFront()
 
 				addPollutantBaseLayer(pollutant) for pollutant in this.pollutants
-				L.control.layers(baselayers, overlays).addTo(map).expand()
+				L.control.layers(baselayers, overlays).addTo(this.lMap).expand()
 
 			selectArc: (arc, layerRef) ->
 				this.selectedArc = arc
@@ -154,5 +156,11 @@
 						self.updateArcsPollution(pollutedArcs)
 						# self.updateArcPollution(pollutedArc) for pollutedArc in pollutedArcs
 					)
+
+		mounted: () ->
+			self = this
+			this.$nextTick(() ->
+				self.setUpPollutionControls()
+				)
 
 </script>

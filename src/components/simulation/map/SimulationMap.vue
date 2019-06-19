@@ -9,7 +9,9 @@
 				/>
 
 			<arcs-layer
+				v-if="lMap"
 				ref="arcsLayer"
+				v-bind:l-map="lMap"
 				/>
 	</l-feature-group>
 
@@ -51,6 +53,7 @@ export default
 		"agents-layer": AgentsLayer
 
 	data: () ->
+		lMap: null
 		zoom:13
 		url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
 		attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -83,22 +86,9 @@ export default
 			console.log("Updating nodes...")
 
 			this.center = computeCenter(nodes)
-			# this.$refs.agentsLayer.fetchAgents(nodes)
 
-			###
-			this.$refs.arcsLayer.fetchArcs(nodes)
-			.then(() ->
-				self.$refs.nodesLayer.bringToFront()
-				self.$refs.agentsLayer.bringToFront()
-				self.setUpControls()
-
-				self.$refs.arcsLayer.setUpPollutionControls(self.$refs.simulationMap.mapObject)
-			)
-			###
 			this.$refs.arcsLayer.setUpNodes(nodes)
 			this.$refs.agentsLayer.setUpNodes(nodes)
-	#		this.setUpControls()
-	#		this.$refs.arcsLayer.setUpPollutionControls(this.$refs.simulationMap.mapObject)
 
 		connectToWebSocket: () ->
 			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
@@ -120,8 +110,9 @@ export default
 
 		self = this
 		this.$nextTick(() ->
+			self.lMap = self.$refs.simulationMap.mapObject
 			self.setUpControls()
-			self.$refs.arcsLayer.setUpPollutionControls(self.$refs.simulationMap.mapObject)
+#			self.$refs.arcsLayer.setUpPollutionControls(self.$refs.simulationMap.mapObject)
 			)
 
 </script>
