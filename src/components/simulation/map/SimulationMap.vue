@@ -97,8 +97,8 @@ export default
 			###
 			this.$refs.arcsLayer.setUpNodes(nodes)
 			this.$refs.agentsLayer.setUpNodes(nodes)
-			this.setUpControls()
-			this.$refs.arcsLayer.setUpPollutionControls(this.$refs.simulationMap.mapObject)
+	#		this.setUpControls()
+	#		this.$refs.arcsLayer.setUpPollutionControls(this.$refs.simulationMap.mapObject)
 
 		connectToWebSocket: () ->
 			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
@@ -117,6 +117,12 @@ export default
 
 	mounted: () ->
 		this.connectToWebSocket()
+
+		self = this
+		this.$nextTick(() ->
+			self.setUpControls()
+			self.$refs.arcsLayer.setUpPollutionControls(self.$refs.simulationMap.mapObject)
+			)
 
 </script>
 
