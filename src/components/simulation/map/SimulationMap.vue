@@ -5,6 +5,7 @@
 	<l-feature-group ref="graphLayer">
 			<nodes-layer
 				ref="nodesLayer"
+				v-bind:display-settings="displaySettings"
 				v-on:nodes-updated="handleNodesReady"
 				/>
 

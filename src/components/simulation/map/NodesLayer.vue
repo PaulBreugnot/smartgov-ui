@@ -1,6 +1,7 @@
 <template>
 	<l-featuregroup ref="nodesFeatureGroup">
 		<l-circle
+			v-if="displaySettings.graph"
 			v-for="(node, id) in nodes"
 			v-on:click="selectNode(node)"
 			:lat-lng="nodeCoordinates(node)"
@@ -25,6 +26,11 @@
 			selectedNode: null
 			radius: 2
 			nodes: {}
+
+		props:
+			displaySettings:
+				type: Object
+				required: true
 
 		methods:
 			nodeCoordinates: (node) ->

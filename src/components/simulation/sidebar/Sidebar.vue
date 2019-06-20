@@ -41,6 +41,8 @@
 				v-on:update:graph="$emit('update:graph', $event)"
 				v-bind:tiles="tiles"
 				v-on:update:tiles="$emit('update:tiles', $event)"
+				v-bind:tile-width-ratio="tileWidthRatio"
+				v-on:update:tile-width-ratio="$emit('update:tile-width-ratio', $event)"
 				v-bind:class="[settingsDisplay == 'display' ? 'w3-show' : 'w3-hide']"/>
 
 			<button
@@ -97,6 +99,9 @@ export default
 			required: true
 		tiles:
 			type: Boolean
+			required: true
+		tileWidthRatio:
+			type: Number
 			required: true
 
 	data: () ->

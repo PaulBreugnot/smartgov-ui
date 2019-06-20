@@ -1,5 +1,6 @@
 <template>
-	<div class="w3-row-padding w3-margin-top w3-margin-bottom">
+	<div class="w3-margin-top w3-margin-bottom">
+		<div class="w3-row-padding">
 		<div class="w3-half">
 			<input
 				class="w3-check"
@@ -18,6 +19,18 @@
 				/>
 			<label>Tiles</label>
 		</div>
+		</div>
+		<div class="w3-center w3-margin-top">
+			<label>Tile size</label>
+			<input
+				class="w3-input"
+				type="range"
+				min="5"
+				max="50"
+				v-bind:value="tileWidthRatio"
+				v-on:input="$emit('update:tile-width-ratio', Number($event.target.value))"
+				/>
+		</div>
 	</div>
 </template>
 
@@ -31,5 +44,8 @@
 			tiles:
 				type: Boolean
 				required: true
+			tileWidthRatio:
+				type: Number
+				reuired: true
 
 </script>

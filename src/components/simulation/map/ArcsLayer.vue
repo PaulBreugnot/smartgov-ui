@@ -175,14 +175,13 @@
 				setArcsColor = (arcs, color) ->
 					for arc in arcs
 						do (arc) ->
-							# set colors only on the None layer
-							self.$refs[arc.id][0].mapObject.setStyle({"color": color})
+							self.$refs[arc.id + '_' + self.displaySettings.pollutant][0].mapObject.setStyle({"color": color})
 
-				setArcsColor(this.selectedArcs, "green")
+				setArcsColor(this.selectedArcs, "red")
 
 				if this.selectedArcs != selectedArcs
 					this.selectedArcs = selectedArcs
-					setArcsColor(this.selectedArcs, "red")
+					setArcsColor(this.selectedArcs, "green")
 				else
 					this.selectedArcs = []
 

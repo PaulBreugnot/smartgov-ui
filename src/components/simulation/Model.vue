@@ -19,6 +19,7 @@
 			class="w3-cell"
 			v-bind:graph.sync="displaySettings.graph"
 			v-bind:tiles.sync="displaySettings.tiles"
+			v-bind:tile-width-ratio.sync="displaySettings.tileWidthRatio"
 			v-on:update:graph="checkUpdate"
 			>
 			</sidebar>

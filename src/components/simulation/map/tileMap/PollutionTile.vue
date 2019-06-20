@@ -2,7 +2,7 @@
 	<l-rectangle
 		ref="tile"
 		v-bind:bounds="bounds"
-		v-on:click="$emit('click')"
+		v-on:click="handleClick"
 		v-bind:weight="0"
 		fill-color="red"
 		color="red"
@@ -30,13 +30,11 @@
 
 		data: () ->
 			pollution: 0
+			weight: 0
 
 		watch:
 			pollutionPeek: (oldVal, newVal) ->
 				this.updateColor()
-
-			arcs: (oldVal, newVal) ->
-				console.log "hey"
 
 		methods:
 			updateColor: () ->
@@ -56,6 +54,17 @@
 							pollutionSum += Number(arc.pollution.NOx)
 
 				return pollutionSum
+			
+			handleClick: () ->
+				this.$emit('click')
+				###
+				newWeight = 0
+				if this.weight == 0
+					newWeight = 1
+
+				this.weight = newWeight
+				this.$refs["tile"].mapObject.setStyle({"weight": this.weight})
+				###
 
 		mounted: () ->
 			self = this
