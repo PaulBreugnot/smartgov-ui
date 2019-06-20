@@ -11,6 +11,7 @@
 			<arcs-layer
 				v-if="lMap"
 				ref="arcsLayer"
+				v-bind:display-settings="displaySettings"
 				v-bind:l-map="lMap"
 				/>
 	</l-feature-group>
@@ -52,12 +53,21 @@ export default
 		"arcs-layer": ArcsLayer
 		"agents-layer": AgentsLayer
 
+	props:
+		displaySettings:
+			type: Object
+			required: true
+
 	data: () ->
 		lMap: null
 		zoom:13
 		url:'http://{s}.tile.osm.org/{z}/{x}/{y}.png'
 		attribution:'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		center: L.latLng(0, 0)
+	
+	watch:
+		"displaySettings.graph": (oldVal, newVal) ->
+			console.log this.displaySettings
 
 	methods:
 		setUpControls: () ->
@@ -75,8 +85,8 @@ export default
 				"Blank": newLayer
 				"Osm": this.$refs.osmBaseLayer.mapObject
 
-			overlays =
-				"Graph": this.$refs.graphLayer.mapObject
+			overlays = {}
+				# "Graph": this.$refs.graphLayer.mapObject
 
 			L.control.layers(baseLayers, overlays).addTo(this.$refs.simulationMap.mapObject).expand();
 

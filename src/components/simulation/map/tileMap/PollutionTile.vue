@@ -59,6 +59,12 @@
 
 		mounted: () ->
 			self = this
+
+			handlePollutionMean = (pollution) ->
+					self.$emit('update:pollution-peek', pollution)
+					self.pollution = pollution
+					self.updateColor()
+
 			this.$watch(
 				this.pollutionMean,
 				(oldVal, newVal) ->
@@ -66,5 +72,10 @@
 					self.pollution = newVal
 					self.updateColor()
 				)
+
+			this.$nextTick(() ->
+				handlePollutionMean(self.pollutionMean())
+				)
+
 </script>
 

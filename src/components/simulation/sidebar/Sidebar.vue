@@ -34,6 +34,17 @@
 
 			<button
 				class="w3-button w3-block"
+				v-on:click="settingsDisplay = 'display'"
+				v-bind:class="[settingsDisplay == 'display' ? 'w3-theme' : 'w3-theme-l1']">Display</button>
+			<display-settings
+				v-bind:graph="graph"
+				v-on:update:graph="$emit('update:graph', $event)"
+				v-bind:tiles="tiles"
+				v-on:update:tiles="$emit('update:tiles', $event)"
+				v-bind:class="[settingsDisplay == 'display' ? 'w3-show' : 'w3-hide']"/>
+
+			<button
+				class="w3-button w3-block"
 				v-on:click="settingsDisplay = 'input'"
 				v-bind:class="[settingsDisplay == 'input' ? 'w3-theme' : 'w3-theme-l1']">Input</button>
 			<input-settings
@@ -63,6 +74,7 @@ import ScenarioPicker from "./tools/ScenarioPicker"
 
 import SimulationSettings from "./settings/SimulationSettings"
 import VisualisationSettings from "./settings/VisualisationSettings"
+import DisplaySettings from "./settings/DisplaySettings"
 import InputSettings from "./settings/InputSettings"
 import PopulationSettings from "./settings/PopulationSettings"
 import PolicySettings from "./settings/PolicySettings"
@@ -74,9 +86,18 @@ export default
 		"scenario-picker": ScenarioPicker
 		"simulation-settings": SimulationSettings
 		"visualisation-settings": VisualisationSettings
+		"display-settings": DisplaySettings
 		"input-settings": InputSettings
 		"population-settings": PopulationSettings
 		"policy-settings": PolicySettings
+
+	props:
+		graph:
+			type: Boolean
+			required: true
+		tiles:
+			type: Boolean
+			required: true
 
 	data: () ->
 		toolbarEnabled: false

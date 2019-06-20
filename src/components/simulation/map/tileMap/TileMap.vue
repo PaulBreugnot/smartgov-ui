@@ -36,6 +36,10 @@
 				type: Object
 				required: true
 
+			tileWidthRatio:
+				type: Number
+				required: true
+
 			lMap:
 				type: Object
 				required: true
@@ -73,9 +77,9 @@
 				tiles = []
 
 				if boundingBox
-					tileWidthCount = 8
 					boundingBoxWidth = boundingBox[1][1] - boundingBox[0][1]
-					tileSize = boundingBoxWidth / tileWidthCount
+					tileSize = boundingBoxWidth * this.tileWidthRatio / 100
+					tileWidthCount = Math.floor(boundingBoxWidth / tileSize) + 1
 
 					boundingBoxHeight = boundingBox[0][0] - boundingBox[1][0]
 					tileHeightCount = Math.floor(boundingBoxHeight / tileSize) + 1

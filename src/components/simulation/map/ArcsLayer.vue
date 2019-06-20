@@ -2,14 +2,14 @@
 	<l-featuregroup>
 
 		<l-featuregroup
-			v-for="pollutant in pollutants"
-			:ref="pollutant">
+			v-if="displaySettings.graph"
+			v-bind:ref="displaySettings.pollutant">
 			<l-polyline
 				v-if="nodes"
 				v-for="(arc, id) in arcs"
-				v-bind:ref="arc.id + '_' + pollutant"
+				v-bind:ref="arc.id + '_' + displaySettings.pollutant"
 				v-bind:lat-lngs="computedArcCoordinates[arc.id]"
-				v-on:click="selectArc(arc, pollutant)"
+				v-on:click="selectArc(arc, displaySettings.pollutant)"
 				color="red"
 				/>
 				<!--:lat-lngs="arcCoordinates(arc)"-->
@@ -17,21 +17,24 @@
 			</l-polyline>
 			<l-popup v-if="selectedArc">
 				<p>Id: {{selectedArc.id}}</p>
-				<p>Pollution rate : {{selectedArc.pollution[pollutant]}} g/s</p>
+				<p>Pollution rate : {{selectedArc.pollution[displaySettings.pollutant]}} g/s</p>
 			</l-popup>
 			
 		</l-featuregroup>
 
 		<tile-map
 			ref="tileMap"
-			pollutant="NOx"
+			v-bind:pollutant="displaySettings.pollutant"
+			v-if="displaySettings.tiles"
 			v-bind:arcs="arcs"
 			v-bind:nodes="nodes"
+			v-bind:tile-width-ratio="displaySettings.tileWidthRatio"
 			v-bind:l-map="lMap"
 			v-on:select-arcs="selectArcs($event)"
 			/>
 
 		<l-featuregroup
+			v-if="false"
 			ref="None">
 			<l-polyline
 				v-if="nodes"
@@ -65,6 +68,10 @@
 				type: Object
 				required: true
 
+			displaySettings:
+				type: Object
+				required: true
+
 		data: () ->
 			nodes: { }
 			arcs: { }
@@ -80,6 +87,13 @@
 				"CH4": 0
 				"CO": 0
 				"FC": 0
+
+		watch:
+			"displaySettings.graph": (newVal, oldVal) ->
+				this.$nextTick(() ->
+					if newVal
+						this.updateArcsPollution(Object.values(this.arcs))
+				)
 
 		computed:
 			computedArcCoordinates: () ->
@@ -102,6 +116,7 @@
 				targetNode = this.nodes[arc.targetNode]
 				return L.latLng((startNode.position[1] + targetNode.position[1]) / 2, (startNode.position[0] + targetNode.position[0]) / 2)
 
+			###
 			setUpPollutionControls: () ->
 				baselayers = { }
 				overlays = { }
@@ -116,6 +131,7 @@
 
 				addPollutantBaseLayer(pollutant) for pollutant in this.pollutants
 				L.control.layers(baselayers, overlays).addTo(this.lMap).expand()
+			###
 
 			selectArc: (arc, layerRef) ->
 				this.selectedArc = arc
@@ -142,12 +158,13 @@
 
 			updateArcsPollution: (pollutedArcs) ->
 				self = this
+				pollutant = this.displaySettings.pollutant
 				for pollutedArc in pollutedArcs
 					do (pollutedArc) ->
 						arcToUpdate = self.arcs[pollutedArc.id]
-						for pollutant in self.pollutants
-							arcToUpdate.pollution[pollutant] = pollutedArc.pollution[pollutant]
-							alpha = 0
+						arcToUpdate.pollution[pollutant] = pollutedArc.pollution[pollutant]
+						alpha = 0
+						if self.displaySettings.graph
 							if self.pollutionPeeks[pollutant] > 0
 								alpha = arcToUpdate.pollution[pollutant] / self.pollutionPeeks[pollutant]
 							self.$refs[pollutedArc.id + '_' + pollutant][0].mapObject.setStyle({"opacity": alpha})
@@ -195,7 +212,7 @@
 		mounted: () ->
 			self = this
 			this.$nextTick(() ->
-				self.setUpPollutionControls()
+				# self.setUpPollutionControls()
 				)
 
 </script>
