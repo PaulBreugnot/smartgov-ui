@@ -27,13 +27,16 @@
 			pollutionPeek:
 				type: Number
 				required: true
+			pollutant:
+				type: String
+				required: true
 
 		data: () ->
 			pollution: 0
 			weight: 0
 
 		watch:
-			pollutionPeek: (oldVal, newVal) ->
+			pollutionPeek: (newVal, oldVal) ->
 				this.updateColor()
 
 		methods:
@@ -48,10 +51,11 @@
 
 			pollutionMean: () ->
 				pollutionSum = 0
+				self = this
 				for arc in this.arcs
 					do (arc) ->
-						if Number(arc.pollution.NOx)
-							pollutionSum += Number(arc.pollution.NOx)
+						if Number(arc.pollution[self.pollutant])
+							pollutionSum += Number(arc.pollution[self.pollutant])
 
 				return pollutionSum
 			
@@ -76,7 +80,7 @@
 
 			this.$watch(
 				this.pollutionMean,
-				(oldVal, newVal) ->
+				(newVal, oldVal) ->
 					self.$emit('update:pollution-peek', newVal)
 					self.pollution = newVal
 					self.updateColor()

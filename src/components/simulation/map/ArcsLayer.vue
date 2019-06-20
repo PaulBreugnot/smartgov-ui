@@ -95,6 +95,13 @@
 						this.updateArcsPollution(Object.values(this.arcs))
 				)
 
+			"displaySettings.pollutant": (newVal, oldVal) ->
+				this.$nextTick(() ->
+					if newVal
+						this.updateArcsPollution(Object.values(this.arcs))
+				)
+
+
 		computed:
 			computedArcCoordinates: () ->
 				console.log("Computing arc coordinates...")

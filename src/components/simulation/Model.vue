@@ -20,6 +20,7 @@
 			v-bind:graph.sync="displaySettings.graph"
 			v-bind:tiles.sync="displaySettings.tiles"
 			v-bind:tile-width-ratio.sync="displaySettings.tileWidthRatio"
+			v-bind:pollutant.sync="displaySettings.pollutant"
 			v-on:update:graph="checkUpdate"
 			>
 			</sidebar>

@@ -7,6 +7,7 @@
 				v-bind:arcs="tile.arcs"
 				v-bind:bounds="tile.bounds"
 				v-bind:pollution-peek="pollutionPeek"
+				v-bind:pollutant="pollutant"
 				v-on:click="$emit('select-arcs', tile.arcs)"
 				v-on:update:pollution-peek="updatePollutionPeek($event)"
 				/>

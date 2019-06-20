@@ -43,6 +43,8 @@
 				v-on:update:tiles="$emit('update:tiles', $event)"
 				v-bind:tile-width-ratio="tileWidthRatio"
 				v-on:update:tile-width-ratio="$emit('update:tile-width-ratio', $event)"
+				v-bind:pollutant="pollutant"
+				v-on:update:pollutant="$emit('update:pollutant', $event)"
 				v-bind:class="[settingsDisplay == 'display' ? 'w3-show' : 'w3-hide']"/>
 
 			<button
@@ -102,6 +104,9 @@ export default
 			required: true
 		tileWidthRatio:
 			type: Number
+			required: true
+		pollutant:
+			type: String
 			required: true
 
 	data: () ->
