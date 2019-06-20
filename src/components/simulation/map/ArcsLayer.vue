@@ -1,5 +1,6 @@
 <template>
 	<l-featuregroup>
+
 		<l-featuregroup
 			v-for="pollutant in pollutants"
 			:ref="pollutant">
@@ -8,7 +9,9 @@
 				v-for="(arc, id) in arcs"
 				v-bind:ref="arc.id + '_' + pollutant"
 				v-bind:lat-lngs="computedArcCoordinates[arc.id]"
-				v-on:click="selectArc(arc, pollutant)">
+				v-on:click="selectArc(arc, pollutant)"
+				color="red"
+				/>
 				<!--:lat-lngs="arcCoordinates(arc)"-->
 				<!--:color="pollutantColor(arc, pollutant)"-->
 			</l-polyline>
@@ -16,12 +19,24 @@
 				<p>Id: {{selectedArc.id}}</p>
 				<p>Pollution rate : {{selectedArc.pollution[pollutant]}} g/s</p>
 			</l-popup>
+			
 		</l-featuregroup>
+
+		<tile-map
+			ref="tileMap"
+			pollutant="NOx"
+			v-bind:arcs="arcs"
+			v-bind:nodes="nodes"
+			v-bind:l-map="lMap"
+			v-on:select-arcs="selectArcs($event)"
+			/>
+
 		<l-featuregroup
 			ref="None">
 			<l-polyline
 				v-if="nodes"
 				v-for="(arc, id) in arcs"
+				v-bind:ref="arc.id"
 				:lat-lngs="computedArcCoordinates[arc.id]"
 				v-on:click="selectArc(arc, 'None')"
 				color="green"/>
@@ -35,11 +50,7 @@
 
 <script lang="coffee">
 	import { LFeatureGroup, LPolyline, LPopup } from "vue2-leaflet"
-	hsv2rgb = (h,s,v) ->
-		f = (n) ->
-			k = (n+h/60)%6
-			return v-v*s*Math.max(Math.min(k,4-k,1),0);
-		return [f(5),f(3),f(1)];
+	import TileMap from "./tileMap/TileMap"
 
 	export default
 
@@ -47,6 +58,7 @@
 			"l-featuregroup": LFeatureGroup
 			"l-polyline": LPolyline
 			"l-popup": LPopup
+			"tile-map": TileMap
 
 		props:
 			lMap:
@@ -54,12 +66,20 @@
 				required: true
 
 		data: () ->
-			nodes: null
+			nodes: { }
 			arcs: { }
-			selectedArc: null
+			selectedArc: null # Arc selected on click
+			selectedArcs: [] # Arcs selected from a tile
 			pollutants: ["NO2", "NOx", "NH3", "VOC", "PM", "CH4", "CO", "FC"]
-			pollutionPeeks: {}
-			arcColors: {}
+			pollutionPeeks:
+				"NOx": 0
+				"NO2": 0
+				"NH3": 0
+				"VOC": 0
+				"PM": 0
+				"CH4": 0
+				"CO": 0
+				"FC": 0
 
 		computed:
 			computedArcCoordinates: () ->
@@ -81,10 +101,6 @@
 				startNode = this.nodes[arc.startNode]
 				targetNode = this.nodes[arc.targetNode]
 				return L.latLng((startNode.position[1] + targetNode.position[1]) / 2, (startNode.position[0] + targetNode.position[0]) / 2)
-
-			pollutantColor: (arc, pollutant) ->
-				rgb = hsv2rgb(0, arc.pollution[pollutant]/this.pollutionPeeks[pollutant], 1)
-				return "rgb(#{Math.floor(rgb[0]*255)},#{Math.floor(rgb[1]*255)},#{Math.floor(rgb[2]*255)})"
 
 			setUpPollutionControls: () ->
 				baselayers = { }
@@ -130,9 +146,28 @@
 					do (pollutedArc) ->
 						arcToUpdate = self.arcs[pollutedArc.id]
 						for pollutant in self.pollutants
-							# self.$set(self.arcColors, pollutedArc.id, self.pollutantColor(pollutedArc, pollutant))
-							# arcToUpdate.pollution[pollutant] = pollutedArc.pollution[pollutant]
-							self.$refs[pollutedArc.id + '_' + pollutant][0].mapObject.setStyle({"color": self.pollutantColor(pollutedArc, pollutant)})
+							arcToUpdate.pollution[pollutant] = pollutedArc.pollution[pollutant]
+							alpha = 0
+							if self.pollutionPeeks[pollutant] > 0
+								alpha = arcToUpdate.pollution[pollutant] / self.pollutionPeeks[pollutant]
+							self.$refs[pollutedArc.id + '_' + pollutant][0].mapObject.setStyle({"opacity": alpha})
+
+			# Used to highlight arcs when a box is selected, only on the None layer
+			selectArcs: (selectedArcs) ->
+				self = this
+				setArcsColor = (arcs, color) ->
+					for arc in arcs
+						do (arc) ->
+							# set colors only on the None layer
+							self.$refs[arc.id][0].mapObject.setStyle({"color": color})
+
+				setArcsColor(this.selectedArcs, "green")
+
+				if this.selectedArcs != selectedArcs
+					this.selectedArcs = selectedArcs
+					setArcsColor(this.selectedArcs, "red")
+				else
+					this.selectedArcs = []
 
 			setUpWebSocket: (stompClient) ->
 				self = this
@@ -146,7 +181,7 @@
 				stompClient.subscribe('/simulation/pollution_peeks', (message) ->
 						# console.log("processing pollution peeks")
 						updatedPollutionPeeks = JSON.parse(message.body)
-						self.$set(self.pollutionPeeks, pollutant, value) for pollutant, value of updatedPollutionPeeks
+						self.pollutionPeeks[pollutant] = Number(value) for pollutant, value of updatedPollutionPeeks
 
 					)
 
