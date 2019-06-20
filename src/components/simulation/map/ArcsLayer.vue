@@ -3,7 +3,7 @@
 
 		<l-featuregroup
 			v-if="displaySettings.graph"
-			v-bind:ref="displaySettings.pollutant">
+			ref="arcMap">
 			<l-polyline
 				v-if="nodes"
 				v-for="(arc, id) in arcs"
@@ -33,21 +33,6 @@
 			v-on:select-arcs="selectArcs($event)"
 			/>
 
-		<l-featuregroup
-			v-if="false"
-			ref="None">
-			<l-polyline
-				v-if="nodes"
-				v-for="(arc, id) in arcs"
-				v-bind:ref="arc.id"
-				:lat-lngs="computedArcCoordinates[arc.id]"
-				v-on:click="selectArc(arc, 'None')"
-				color="green"/>
-			<l-popup v-if="selectedArc">
-				<p>Id: {{selectedArc.id}}</p>
-				<p v-for="(rate, pollutant) in selectedArc.pollution">{{pollutant}} : {{rate}} g/s</p>
-			</l-popup>
-		</l-featuregroup>
 	</l-featuregroup>
 </template>
 
@@ -144,10 +129,13 @@
 				this.selectedArc = arc
 				console.log("Arc selected on layer #{layerRef} :")
 				console.log(arc)
+				this.$refs.arcMap.mapObject.openPopup(this.arcMidCoordinates(arc))
+				###
 				unless layerRef == "None"
 					this.$refs[layerRef][0].mapObject.openPopup(this.arcMidCoordinates(arc))
 				else
 					this.$refs.None.mapObject.openPopup(this.arcMidCoordinates(arc))
+					###
 
 			setUpNodes: (nodes) ->
 				this.nodes = nodes
