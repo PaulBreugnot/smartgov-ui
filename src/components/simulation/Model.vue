@@ -27,7 +27,8 @@
 			<div id="map-container" class="w3-cell w3-cell-top w3-border">
 				<simulation-map
 						v-bind:display-settings="displaySettings"	
-						id="leaflet-map"></simulation-map>
+						id="leaflet-map">
+				</simulation-map>
 			</div>
 		</div>
 	</div>

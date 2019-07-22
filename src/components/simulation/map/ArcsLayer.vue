@@ -96,7 +96,7 @@
 
 		methods:
 			nodeCoordinates: (node) ->
-				return L.latLng(node.position[1], node.position[0])
+				return L.latLng(node.position[0], node.position[1])
 
 			arcCoordinates: (arc) ->
 				startNode = this.nodes[arc.startNode]
@@ -106,24 +106,7 @@
 			arcMidCoordinates: (arc) ->
 				startNode = this.nodes[arc.startNode]
 				targetNode = this.nodes[arc.targetNode]
-				return L.latLng((startNode.position[1] + targetNode.position[1]) / 2, (startNode.position[0] + targetNode.position[0]) / 2)
-
-			###
-			setUpPollutionControls: () ->
-				baselayers = { }
-				overlays = { }
-
-				self = this
-				addPollutantBaseLayer = (pollutant) ->
-					baselayers[pollutant] = self.$refs[pollutant][0].mapObject
-					self.$refs[pollutant][0].mapObject.bringToFront()
-
-				baselayers.None = this.$refs.None.mapObject
-				this.$refs.None.mapObject.bringToFront()
-
-				addPollutantBaseLayer(pollutant) for pollutant in this.pollutants
-				L.control.layers(baselayers, overlays).addTo(this.lMap).expand()
-			###
+				return L.latLng((startNode.position[0] + targetNode.position[0]) / 2, (startNode.position[1] + targetNode.position[1]) / 2)
 
 			selectArc: (arc, layerRef) ->
 				this.selectedArc = arc
@@ -180,6 +163,60 @@
 				else
 					this.selectedArcs = []
 
+			fetchArcs: () ->
+				url = process.env.VUE_APP_ARCS
+
+				self = this
+				fetch(url)
+				.catch((error) ->
+					console.log(error)
+					)
+				.then((response) ->
+					response.json()
+					)
+				.then((json) ->
+					self.updateArc(arc) for arc in json
+
+					console.log("Arcs :")
+					console.log(json)
+					console.log(self.arcs)
+				)
+
+			fetchPollutionPeeks: () ->
+				url = "/json-tests/pollution_peeks.json"
+
+				self = this
+				fetch(url)
+				.catch((error) ->
+					console.log(error)
+					)
+				.then((response) ->
+					response.json()
+					)
+				.then((json) ->
+					self.pollutionPeeks[pollutant] = Number(value) for pollutant, value of json
+
+					console.log("Pollution peeks :")
+					console.log(json)
+					console.log(self.pollutionPeeks)
+				)
+
+			fetchPollution: () ->
+				url = "/json-tests/pollution.json"
+
+				self = this
+				fetch(url)
+				.catch((error) ->
+					console.log(error)
+					)
+				.then((response) ->
+					response.json()
+					)
+				.then((json) ->
+					self.updateArcsPollution(json)
+				)
+
+
 			setUpWebSocket: (stompClient) ->
 				self = this
 				stompClient.subscribe('/simulation/arcs', (message) ->
@@ -202,11 +239,5 @@
 						self.updateArcsPollution(pollutedArcs)
 						# self.updateArcPollution(pollutedArc) for pollutedArc in pollutedArcs
 					)
-
-		mounted: () ->
-			self = this
-			this.$nextTick(() ->
-				# self.setUpPollutionControls()
-				)
 
 </script>

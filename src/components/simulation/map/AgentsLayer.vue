@@ -82,14 +82,14 @@ export default
 
 		agentCoordinates: (agent) ->
 			position = agent.body.position
-			return L.latLng(position[1], position[0])
+			return L.latLng(position[0], position[1])
 
 		trajectoryCoordinates: (agent) ->
 			points = []
 			self = this
 			addPoint = (nodeId) ->
 				node = self.nodes[nodeId]
-				points.push(L.latLng(node.position[1], node.position[0]))
+				points.push(L.latLng(node.position[0], node.position[1]))
 
 			addPoint(nodeId) for nodeId in agent.body.plan.nodes
 			return points

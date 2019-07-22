@@ -1,5 +1,6 @@
 <template>
 	<l-featuregroup ref="nodesFeatureGroup">
+			<!--
 		<l-circle
 			v-if="displaySettings.graph"
 			v-for="(node, id) in nodes"
@@ -10,6 +11,7 @@
 			<l-popup v-if="selectedNode">
 				<p>id : {{selectedNode.id}}</p>
 			</l-popup>
+			-->
 		</l-featuregroup>
 </template>
 
@@ -34,7 +36,7 @@
 
 		methods:
 			nodeCoordinates: (node) ->
-				return L.latLng(node.position[1], node.position[0])
+				return L.latLng(node.position[0], node.position[1])
 
 			updateNode: (node) ->
 				nodeToUpdate = this.nodes[node.id]
@@ -57,9 +59,8 @@
 						self.$emit("nodes-updated", self.nodes)
 					)
 
-			###
 			fetchNodes: () ->
-				url = "/json-tests/init_nodes.json"
+				url = process.env.VUE_APP_NODES
 
 				self = this
 				fetch(url)
@@ -71,13 +72,13 @@
 					)
 				.then((json) ->
 					# Special vue syntax to make the dict responsive
-					self.$set(self.nodes, id, node) for id, node of json
+					self.updateNode(node) for node in json
 
 					console.log("Nodes :")
+					console.log(json)
 					console.log(self.nodes)
-					self.$emit('ready', self.nodes)
+					self.$emit("nodes-updated", self.nodes)
 				)
-			###
 
 			selectNode: (node) ->
 				this.selectedNode = node
@@ -88,9 +89,8 @@
 			bringToFront: () ->
 				this.$refs.nodesFeatureGroup.mapObject.bringToFront()
 
-		###
 		mounted: () ->
-			this.fetchNodes()
-		###
+			if process.env.VUE_APP_VISUALISATION_MODE == "static"
+				this.fetchNodes()
 
 </script>

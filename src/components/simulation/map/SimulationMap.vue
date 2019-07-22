@@ -36,8 +36,8 @@ computeCenter = (nodes) ->
 		totalLat = 0
 		totalLon = 0
 		sumCoordinates = (coordinates) ->
-			totalLat += coordinates[1]
-			totalLon += coordinates[0]
+			totalLat += coordinates[0]
+			totalLon += coordinates[1]
 
 		sumCoordinates(node.position) for id, node of nodes
 
@@ -101,6 +101,9 @@ export default
 			this.$refs.arcsLayer.setUpNodes(nodes)
 			this.$refs.agentsLayer.setUpNodes(nodes)
 
+			if(process.env.VUE_APP_VISUALISATION_MODE == "static")
+				this.$refs.arcsLayer.fetchArcs()
+
 		connectToWebSocket: () ->
 			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");
 			stompClient = Stomp.over(socket);
@@ -117,7 +120,8 @@ export default
 			)
 
 	mounted: () ->
-		this.connectToWebSocket()
+		if(process.env.VUE_APP_VISUALISATION_MODE == "dynamic")
+			this.connectToWebSocket()
 
 		self = this
 		this.$nextTick(() ->

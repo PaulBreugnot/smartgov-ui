@@ -59,14 +59,14 @@
 					right = -Infinity
 					for id, node of this.nodes
 						do (id, node) ->
-							if node.position[1] < bottom
-								bottom = node.position[1]
-							if node.position[1] > top
-								top = node.position[1]
-							if node.position[0] < left
-								left = node.position[0]
-							if node.position[0] > right
-								right = node.position[0]
+							if node.position[0] < bottom
+								bottom = node.position[0]
+							if node.position[0] > top
+								top = node.position[0]
+							if node.position[1] < left
+								left = node.position[1]
+							if node.position[1] > right
+								right = node.position[1]
 
 					corner1 = [top, left]
 					corner2 = [bottom, right]
@@ -147,8 +147,8 @@
 					do (id, arc) ->
 						sourceNode = self.nodes[arc.startNode].position
 						
-						tileLine = lookForLine(0, tiles.length - 1, sourceNode[1])
-						tile = lookForTileInLine(0, tileLine.length - 1, sourceNode[0], tileLine)
+						tileLine = lookForLine(0, tiles.length - 1, sourceNode[0])
+						tile = lookForTileInLine(0, tileLine.length - 1, sourceNode[1], tileLine)
 
 						tile.arcs.push(arc)
 				console.log "Done."
