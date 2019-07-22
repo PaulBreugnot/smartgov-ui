@@ -17,6 +17,11 @@
 				/>
 	</l-feature-group>
 
+	<establishments-layer
+		ref="establishmentsLayer"
+		v-bind:display-settings="displaySettings"
+		/>
+
 	<agents-layer
 		ref="agentsLayer"
 		/>
@@ -29,6 +34,7 @@ import { LMap, LTileLayer, LControlLayers, LFeatureGroup } from "vue2-leaflet"
 import NodesLayer from "./NodesLayer"
 import ArcsLayer from "./ArcsLayer"
 import AgentsLayer from "./AgentsLayer"
+import EstablishmentsLayer from "./EstablishmentsLayer"
 
 computeCenter = (nodes) ->
 	nodeCount = Object.keys(nodes).length
@@ -53,6 +59,7 @@ export default
 		"nodes-layer": NodesLayer
 		"arcs-layer": ArcsLayer
 		"agents-layer": AgentsLayer
+		"establishments-layer": EstablishmentsLayer
 
 	props:
 		displaySettings:
@@ -74,8 +81,8 @@ export default
 		setUpControls: () ->
 			L.GridLayer.BlankLayer = L.GridLayer.extend(
 				createTile: (coords) ->
-					tile = L.DomUtil.create('canvas');
-					return tile;
+					tile = L.DomUtil.create('canvas')
+					return tile
 			)
 
 			L.gridLayer.blank = () ->
@@ -102,7 +109,14 @@ export default
 			this.$refs.agentsLayer.setUpNodes(nodes)
 
 			if(process.env.VUE_APP_VISUALISATION_MODE == "static")
-				this.$refs.arcsLayer.fetchArcs()
+				self = this
+				self.$refs.arcsLayer.fetchPollutionPeeks()
+				.then(() ->
+					self.$refs.arcsLayer.fetchArcs()
+				)
+				.then(() ->
+					self.$refs.arcsLayer.fetchPollution()
+				)
 
 		connectToWebSocket: () ->
 			socket = new SockJS("#{process.env.VUE_APP_SIMULATION_SERVER_URL}/sg-websocket");

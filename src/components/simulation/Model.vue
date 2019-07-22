@@ -51,6 +51,7 @@ export default
 		displaySettings:
 			graph: true
 			tiles: false
+			establishments: true
 			pollutant: "NOx"
 			tileWidthRatio: 10
 	

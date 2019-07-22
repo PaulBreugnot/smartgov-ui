@@ -149,10 +149,13 @@
 
 			# Used to highlight arcs when a box is selected, only on the None layer
 			selectArcs: (selectedArcs) ->
+				console.log selectedArcs
 				self = this
 				setArcsColor = (arcs, color) ->
 					for arc in arcs
 						do (arc) ->
+							console.log self.$refs
+							console.log self.$refs[arc.id + '_' + self.displaySettings.pollutant]
 							self.$refs[arc.id + '_' + self.displaySettings.pollutant][0].mapObject.setStyle({"color": color})
 
 				setArcsColor(this.selectedArcs, "red")
@@ -183,7 +186,7 @@
 				)
 
 			fetchPollutionPeeks: () ->
-				url = "/json-tests/pollution_peeks.json"
+				url = process.env.VUE_APP_POLLUTION_PEEKS
 
 				self = this
 				fetch(url)
@@ -202,7 +205,7 @@
 				)
 
 			fetchPollution: () ->
-				url = "/json-tests/pollution.json"
+				url = process.env.VUE_APP_POLLUTION
 
 				self = this
 				fetch(url)
