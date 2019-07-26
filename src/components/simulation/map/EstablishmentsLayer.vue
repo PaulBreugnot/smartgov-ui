@@ -5,8 +5,8 @@
 			v-for="(establishment, id) in establishments"
 			v-on:click="selectEstablishment(establishment)"
 			:lat-lng="establishmentCoordinates(establishment)"
-			:radius="12"
-			color="orange">
+			:radius="14"
+			:color="Object.values(establishment.rounds).length > 0 ? 'red' : 'yellow'">
 		</l-circle>
 		<l-polyline
 			v-if="selectedEstablishment"
@@ -17,6 +17,7 @@
 			<p>id : {{selectedEstablishment.id}}</p>
 			<p>name : {{selectedEstablishment.name}}</p>
 			<p>st8 : {{selectedEstablishment.activity}}</p>
+			<p>rounds : {{Object.values(selectedEstablishment.rounds).length}}</p>
 			<p>fleet :</p>
 			<p v-for="(count, norm) in fleet">{{norm}} : {{count}}</p>
 		</l-popup>

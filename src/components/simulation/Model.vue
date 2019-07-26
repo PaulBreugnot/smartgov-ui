@@ -49,7 +49,7 @@ export default
 		currentTab: 'simulation'
 		simulationDuration: null
 		displaySettings:
-			graph: true
+			graph: false
 			tiles: false
 			establishments: true
 			pollutant: "NOx"

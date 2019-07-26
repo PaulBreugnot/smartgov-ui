@@ -115,7 +115,7 @@ export default
 					self.$refs.arcsLayer.fetchArcs()
 				)
 				.then(() ->
-					self.$refs.arcsLayer.fetchPollution()
+#					self.$refs.arcsLayer.fetchPollution()
 				)
 
 		connectToWebSocket: () ->

@@ -12,6 +12,14 @@
 				<p>id : {{selectedNode.id}}</p>
 			</l-popup>
 			-->
+		<l-circle
+			:lat-lng="[45.7753874, 4.778147]"
+			:radius="20"
+			/>
+		<l-circle
+			:lat-lng="[45.8712987, 4.8211324]"
+			:radius="20"
+			/>
 		</l-featuregroup>
 </template>
 
